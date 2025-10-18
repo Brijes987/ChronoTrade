@@ -1,0 +1,44 @@
+matching_engine:
+  max_orders_per_symbol: 100000
+  price_precision: 4
+  enable_gpu_acceleration: true
+  enable_simd_optimizations: true
+
+market_data:
+  udp_port: 9999
+  udp_buffer_size: 65536
+  processing_threads: 4
+  enable_hardware_timestamps: true
+  multicast_groups:
+    - "239.1.1.1"
+    - "239.1.1.2"
+
+risk_management:
+  max_position_size: 1000000
+  max_order_size: 10000
+  max_daily_loss: 100000
+  max_portfolio_var: 0.05
+  enable_circuit_breakers: true
+  circuit_breaker_threshold: 0.10
+
+networking:
+  grpc_port: 50051
+  metrics_port: 8080
+  max_connections: 10000
+  enable_compression: true
+
+performance:
+  cpu_affinity: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  memory_pool_size: 1048576  # 1MB
+  enable_numa_optimization: true
+  
+logging:
+  level: "INFO"
+  file: "logs/trading_engine.log"
+  max_file_size: "100MB"
+  max_files: 10
+
+monitoring:
+  enable_prometheus: true
+  enable_grafana: true
+  metrics_interval_ms: 100
