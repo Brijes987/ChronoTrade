@@ -7,8 +7,8 @@ option(ENABLE_GRPC "Enable gRPC support" OFF)
 option(BUILD_TESTING "Build tests" OFF)
 option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
-# Use C++20 for better CI compatibility
-set(CMAKE_CXX_STANDARD 20)
+# Use C++17 for maximum CI compatibility
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

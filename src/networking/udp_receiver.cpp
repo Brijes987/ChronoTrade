@@ -1,5 +1,7 @@
 #include "trading_engine/networking/udp_receiver.hpp"
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 namespace trading_engine::networking {
 
@@ -19,16 +21,16 @@ bool UdpReceiver::initialize() {
     return setup_socket();
 }
 
-void UdpReceiver::start(std::stop_token stop_token) {
+void UdpReceiver::start() {
     std::cout << "UDP receiver started on port " << port_ << std::endl;
     running_.store(true);
     
-    std::thread receive_thread([this, stop_token]() {
-        receive_loop(stop_token);
+    std::thread receive_thread([this]() {
+        receive_loop();
     });
     
     if (receive_thread.joinable()) {
-        receive_thread.join();
+        receive_thread.detach(); // Let it run in background
     }
 }
 
@@ -60,8 +62,8 @@ bool UdpReceiver::join_multicast_group(const std::string& group_address) {
     return true; // Stub implementation
 }
 
-void UdpReceiver::receive_loop(std::stop_token stop_token) {
-    while (!stop_token.stop_requested() && running_.load()) {
+void UdpReceiver::receive_loop() {
+    while (running_.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         
         // Simulate packet reception

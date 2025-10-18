@@ -48,14 +48,14 @@ int main(int argc, char* argv[]) {
         
         // Start services
         std::cout << "Starting market data feed..." << std::endl;
-        auto feed_thread = std::jthread([&](std::stop_token stop_token) {
-            feed_handler.start(stop_token);
+        std::thread feed_thread([&]() {
+            feed_handler.start();
         });
         
 #ifdef ENABLE_GRPC
         std::cout << "Starting gRPC API server..." << std::endl;
-        auto grpc_thread = std::jthread([&](std::stop_token stop_token) {
-            grpc_service.start("0.0.0.0:50051", stop_token);
+        std::thread grpc_thread([&]() {
+            grpc_service.start("0.0.0.0:50051");
         });
 #endif
         
@@ -74,10 +74,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Shutting down trading engine..." << std::endl;
         
         // Graceful shutdown
-        feed_thread.request_stop();
-#ifdef ENABLE_GRPC
-        grpc_thread.request_stop();
-#endif
+        feed_handler.stop();
         
         if (feed_thread.joinable()) feed_thread.join();
 #ifdef ENABLE_GRPC
