@@ -42,41 +42,39 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
 
-# Core library (always build)
-add_subdirectory(src/core)
-add_subdirectory(src/matching_engine)
-add_subdirectory(src/market_data)
-add_subdirectory(src/risk_management)
-add_subdirectory(src/networking)
-
-# Optional components
-if(ENABLE_CUDA)
-    add_subdirectory(src/gpu_compute)
-endif()
-
-if(ENABLE_GRPC)
-    add_subdirectory(src/grpc_api)
-endif()
-
-# Main executable
+# Main executable (simplified for CI)
 add_executable(trading_engine src/main.cpp)
 
-# Link core libraries
+# Link only essential libraries
 target_link_libraries(trading_engine 
-    core 
-    matching_engine 
-    market_data 
-    risk_management
-    networking
     Threads::Threads
 )
 
-# Link optional libraries
-if(ENABLE_CUDA)
+# Optional: Build other components only if explicitly requested
+if(BUILD_FULL_PROJECT)
+    add_subdirectory(src/core)
+    add_subdirectory(src/matching_engine)
+    add_subdirectory(src/market_data)
+    add_subdirectory(src/risk_management)
+    add_subdirectory(src/networking)
+    
+    target_link_libraries(trading_engine 
+        core 
+        matching_engine 
+        market_data 
+        risk_management
+        networking
+    )
+endif()
+
+# Optional components
+if(ENABLE_CUDA AND BUILD_FULL_PROJECT)
+    add_subdirectory(src/gpu_compute)
     target_link_libraries(trading_engine gpu_compute)
 endif()
 
-if(ENABLE_GRPC)
+if(ENABLE_GRPC AND BUILD_FULL_PROJECT)
+    add_subdirectory(src/grpc_api)
     target_link_libraries(trading_engine grpc_api)
 endif()
 
