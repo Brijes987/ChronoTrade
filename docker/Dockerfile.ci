@@ -1,43 +1,30 @@
 FROM ubuntu:22.04
 
-# Install system dependencies
+# Install minimal dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
-    git \
-    wget \
     gcc-12 \
     g++-12 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up modern C++ compiler
+# Set up compiler
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
 
 # Set working directory
 WORKDIR /app
 
-# Copy source code
-COPY . .
+# Copy only necessary files
+COPY CMakeLists.txt .
+COPY src/main.cpp src/main.cpp
 
-# Create build directory and compile (minimal version)
+# Build the minimal trading engine
 RUN mkdir -p build && cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_CXX_STANDARD=17 \
-          -DBUILD_FULL_PROJECT=OFF \
-          -DENABLE_CUDA=OFF \
-          -DENABLE_GRPC=OFF \
           .. && \
     make -j$(nproc)
-
-# Set runtime configuration
-ENV TRADING_ENGINE_MODE=demo
-
-# Expose ports for future use
-EXPOSE 50051 8080
-
-# Set performance optimizations (if available)
-RUN echo 'performance' > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor 2>/dev/null || true
 
 # Run the trading engine
 CMD ["./build/trading_engine"]

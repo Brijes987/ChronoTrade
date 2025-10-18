@@ -10,19 +10,12 @@ services:
       - "9999:9999/udp"  # Market data feed
       - "8080:8080"    # Metrics/monitoring
     environment:
-      - CUDA_VISIBLE_DEVICES=0
+      - TRADING_ENGINE_MODE=demo
       - TRADING_ENGINE_LOG_LEVEL=INFO
-      - TRADING_ENGINE_THREADS=8
+      - TRADING_ENGINE_THREADS=4
     volumes:
       - ./config:/app/config:ro
       - ./logs:/app/logs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
     networks:
       - trading-network
     
