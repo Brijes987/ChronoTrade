@@ -8,7 +8,10 @@
 #include "trading_engine/market_data/feed_handler.hpp"
 #include "trading_engine/risk_management/risk_manager.hpp"
 #include "trading_engine/networking/udp_receiver.hpp"
+
+#ifdef ENABLE_GRPC
 #include "trading_engine/grpc_api/trading_service.hpp"
+#endif
 
 using namespace trading_engine;
 
@@ -32,7 +35,10 @@ int main(int argc, char* argv[]) {
         market_data::FeedHandler feed_handler;
         risk_management::RiskManager risk_manager;
         networking::UdpReceiver market_data_receiver(9999);
+        
+#ifdef ENABLE_GRPC
         grpc_api::TradingService grpc_service;
+#endif
         
         // Setup callbacks
         order_book.set_trade_callback([](const Trade& trade) {
@@ -46,10 +52,12 @@ int main(int argc, char* argv[]) {
             feed_handler.start(stop_token);
         });
         
+#ifdef ENABLE_GRPC
         std::cout << "Starting gRPC API server..." << std::endl;
         auto grpc_thread = std::jthread([&](std::stop_token stop_token) {
             grpc_service.start("0.0.0.0:50051", stop_token);
         });
+#endif
         
         std::cout << "Trading engine started successfully!" << std::endl;
         std::cout << "Press Ctrl+C to shutdown..." << std::endl;
@@ -67,10 +75,14 @@ int main(int argc, char* argv[]) {
         
         // Graceful shutdown
         feed_thread.request_stop();
+#ifdef ENABLE_GRPC
         grpc_thread.request_stop();
+#endif
         
         if (feed_thread.joinable()) feed_thread.join();
+#ifdef ENABLE_GRPC
         if (grpc_thread.joinable()) grpc_thread.join();
+#endif
         
         std::cout << "Trading engine shutdown complete." << std::endl;
         
