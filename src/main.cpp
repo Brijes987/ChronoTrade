@@ -3,17 +3,15 @@
 #include <chrono>
 #include <signal.h>
 
-#include "trading_engine/types.hpp"
-#include "trading_engine/matching_engine/order_book.hpp"
 #include "trading_engine/market_data/feed_handler.hpp"
-#include "trading_engine/risk_management/risk_manager.hpp"
 #include "trading_engine/networking/udp_receiver.hpp"
 
 #ifdef ENABLE_GRPC
 #include "trading_engine/grpc_api/trading_service.hpp"
 #endif
 
-using namespace trading_engine;
+using namespace trading_engine::market_data;
+using namespace trading_engine::networking;
 
 std::atomic<bool> running{true};
 
@@ -31,19 +29,17 @@ int main(int argc, char* argv[]) {
     
     try {
         // Initialize core components
-        matching_engine::OrderBook order_book("AAPL");
-        market_data::FeedHandler feed_handler;
-        risk_management::RiskManager risk_manager;
-        networking::UdpReceiver market_data_receiver(9999);
+        FeedHandler feed_handler;
+        UdpReceiver market_data_receiver(9999);
         
 #ifdef ENABLE_GRPC
         grpc_api::TradingService grpc_service;
 #endif
         
         // Setup callbacks
-        order_book.set_trade_callback([](const Trade& trade) {
-            std::cout << "Trade executed: " << trade.symbol 
-                     << " " << trade.quantity << "@" << trade.price << std::endl;
+        feed_handler.set_data_callback([](const MarketData& data) {
+            std::cout << "Market data: " << data.symbol 
+                     << " bid=" << data.bid_price << " ask=" << data.ask_price << std::endl;
         });
         
         // Start services
