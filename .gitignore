@@ -1,0 +1,90 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Compiled Object files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+trading_engine
+*.bin
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# CUDA
+*.ptx
+*.cubin
+*.fatbin
+
+# Profiling
+*.prof
+*.nvprof
+
+# Temporary files
+*.tmp
+*.temp
+
+# Package managers
+conan.lock
+vcpkg_installed/
+
+# Test results
+Testing/
+test_results/
+benchmark_results.json
+
+# Docker
+.dockerignore
+
+# Environment variables
+.env
+.env.local
+
+# Generated protobuf files
+*.pb.h
+*.pb.cc
+*_pb2.py
+
+# Performance data
+perf.data*
+callgrind.out.*
+
+# Core dumps
+core.*
+*.core
