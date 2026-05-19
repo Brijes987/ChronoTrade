@@ -1,0 +1,86 @@
+---
+# ChronoTrade clang-tidy configuration
+# Optimized for high-performance trading systems with lock-free code
+
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  clang-analyzer-*,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  concurrency-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-function-cognitive-complexity
+
+WarningsAsErrors: ''
+
+HeaderFilterRegex: 'include/trading_engine/.*'
+
+CheckOptions:
+  # Performance tuning
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: 'false'
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'std::function;std::shared_ptr;std::unique_ptr'
+  
+  # Concurrency settings
+  - key: concurrency-mt-unsafe.FunctionSet
+    value: 'posix'
+  
+  # Readability
+  - key: readability-identifier-naming.ClassCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.FunctionCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.VariableCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.ConstantCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.NamespaceCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: 'CamelCase'
+  
+  # Suppress false positives in lock-free code
+  - key: cppcoreguidelines-pro-type-union-access.Enabled
+    value: 'false'
+  - key: cppcoreguidelines-avoid-c-arrays.Enabled
+    value: 'false'
+  
+  # Allow atomic operations without additional checks
+  - key: concurrency-thread-canceltype-asynchronous.Enabled
+    value: 'false'
+
+# Suppress specific warnings in lock-free data structures
+# These are intentional low-level optimizations
+SuppressionComments:
+  - 'NOLINT'
+  - 'NOLINTNEXTLINE'
+
+# Files to exclude from analysis
+ExcludeHeaderFilterRegex: >
+  .*/third_party/.*|
+  .*/build/.*|
+  .*/cmake-build.*/.*
+
+# Additional compiler flags for analysis
+CompileFlags:
+  Add:
+    - '-std=c++17'
+    - '-Wall'
+    - '-Wextra'
+    - '-O3'
+    - '-march=native'
+  Remove:
+    - '-W*'
