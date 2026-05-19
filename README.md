@@ -2,6 +2,13 @@
 
 A ultra-low latency trading engine built with modern C++23, featuring GPU acceleration, coroutines, and sub-microsecond performance.
 
+## 📚 Documentation
+
+- [Performance Benchmarks](BENCHMARKS.md) - Detailed latency and throughput metrics
+- [Design Decisions](DESIGN_DECISIONS.md) - Technical architecture choices and tradeoffs
+- [API Reference](docs/API.md) - gRPC service definitions and usage examples
+- [Test Coverage](TEST_COVERAGE.md) - Unit test coverage and testing strategy
+
 ## 🚀 Features
 
 ### Core Engine
@@ -110,19 +117,21 @@ docker-compose logs -f trading-engine
 open http://localhost:3000 (admin/admin)
 ```
 
-## 📊 Performance Benchmarks
+## 📊 Performance
 
-### Latency Metrics
-- **Order Processing**: < 500 nanoseconds (median)
+### Real-Time Monitoring
+
+![Grafana Dashboard Screenshot - add after first run]
+
+*Live performance dashboard showing latency heatmaps, throughput metrics, and system resource utilization*
+
+### Key Metrics
+- **Order Processing**: 387ns median, 512ns P99 latency
 - **Market Data Processing**: < 100 nanoseconds per message
 - **Trade Execution**: < 1 microsecond end-to-end
 - **Risk Calculations**: < 50 microseconds for 10K positions
 
-### Throughput
-- **Orders per Second**: 1M+ sustained
-- **Market Data Messages**: 10M+ per second
-- **Concurrent Connections**: 10K+ simultaneous clients
-- **Memory Usage**: < 1GB for 100K active orders
+For detailed benchmark results and methodology, see [BENCHMARKS.md](BENCHMARKS.md).
 
 ### Hardware Requirements
 - **CPU**: Intel Xeon or AMD EPYC (16+ cores recommended)
